@@ -1,0 +1,79 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #f0f8ff; /* Fondo pastel suave */
+  padding: 10px; /* Espaciado para móviles */
+}
+
+.titleWrapper {
+  display: flex;
+  flex-direction: column; /* Cambia a una columna para colocar elementos uno debajo del otro */
+  align-items: center; /* Centra el contenido horizontalmente */
+  justify-content: center; /* Asegura que el contenido esté centrado verticalmente */
+  gap: 10px; /* Espaciado entre el título y el ícono */
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 1.8em;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  margin: 0;
+}
+
+.titleIcon {
+  width: 50px; /* Tamaño del ícono ajustable */
+  height: 50px;
+}
+
+
+.scannerWrapper {
+  position: relative;
+  width: 90%; /* Ajuste dinámico para móviles */
+  max-width: 300px; /* Tamaño reducido del escáner */
+  aspect-ratio: 1;
+  margin: 20px 0;
+  border-radius: 15px;
+  border: 4px solid #b3e5fc; /* Color pastel inicial */
+  transition: border-color 0.3s ease-in-out; /* Transición suave */
+}
+
+.scannerWrapper.success {
+  border-color: #4caf50; /* Verde para éxito */
+}
+
+.scannerWrapper video {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  object-fit: cover;
+}
+
+.button {
+  padding: 12px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 90%; /* Ancho adaptativo */
+  max-width: 300px; /* Coincide con el ancho del escáner */
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.result {
+  font-size: 1.2em;
+  color: #333;
+  margin-top: 20px;
+  text-align: center;
+}

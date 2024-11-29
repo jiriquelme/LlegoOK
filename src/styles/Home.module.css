@@ -1,0 +1,190 @@
+/* styles/Home.module.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f8ff; /* color pastel suave */
+  }
+  
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .appTitle {
+    font-size: 2.5em;
+    color: #333;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 2.5em;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  
+  .description {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .menu {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .menuButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #b3e5fc;
+    color: #333;
+    border: none;
+    border-radius: 10px;
+    width: 150px;
+    height: 120px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .menuButton:hover {
+    transform: scale(1.05);
+    background-color: #81d4fa;
+  }
+  
+  .icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+  }
+  
+  .loader {
+    font-size: 1.5em;
+    color: #333;
+    animation: fadeInOut 1s infinite;
+  }
+  
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  /* styles/Home.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f8ff; /* color pastel suave */
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    font-size: 2.5em;
+    color: #444;
+    margin-bottom: 10px;
+  }
+  
+  .button {
+    padding: 15px 30px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #0070f3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .button:hover {
+    background-color: #005bb5;
+  }
+  
+  .captureButton {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #ff4081;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .video {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 8px;
+  }
+  
+  .sendButton {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  
+  .sendButton:hover {
+    background-color: #388e3c;
+  }
+  .video {
+    width: 100%;
+    max-width: 640px; /* Adjust based on your design preference */
+    height: auto; /* Maintains aspect ratio */
+    border-radius: 8px;
+    border: 1px solid #ddd; /* Optional, for better visibility */
+}
+
+.button, .captureButton {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007bff; /* Bootstrap primary color for example */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover, .captureButton:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+.video {
+  width: 100%;
+  max-width: 640px; /* Adjust based on your design preference */
+  height: auto; /* Maintains aspect ratio */
+  border-radius: 8px;
+  border: 1px solid #ddd; /* Optional, for better visibility */
+}
+
+.button, .captureButton {
+  padding: 10px 20px;
+  margin-top: 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff; /* Bootstrap primary color for example */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover, .captureButton:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
+}

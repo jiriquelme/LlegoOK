@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">front-node-js</string>
+    <string name="title_activity_main">front-node-js</string>
+    <string name="package_name">com.llegOk.app</string>
+    <string name="custom_url_scheme">com.llegOk.app</string>
+</resources>

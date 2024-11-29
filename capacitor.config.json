@@ -1,0 +1,6 @@
+{
+  "appId": "com.llegOk.app",
+  "appName": "llegok.app",
+  "webDir": "public",
+  "bundledWebRuntime": false
+}

@@ -1,0 +1,85 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f0f8ff; /* Soft pastel color */
+    font-family: Arial, sans-serif;
+}
+
+.title {
+    font-size: 2.5em;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+.video {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 8px;
+}
+
+.button, .captureButton {
+    padding: 15px 30px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #0070f3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.button:hover, .captureButton:hover {
+    background-color: #005bb5;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+.video {
+    width: 100%;
+    max-width: 640px; /* Adjust based on your design preference */
+    height: auto; /* Maintains aspect ratio */
+    border-radius: 8px;
+    border: 1px solid #ddd; /* Optional, for better visibility */
+}
+
+.button, .captureButton {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007bff; /* Bootstrap primary color for example */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover, .captureButton:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
+.video {
+    width: 100%;
+    max-width: 640px; /* Adjust based on your design preference */
+    height: auto; /* Maintains aspect ratio */
+    border-radius: 8px;
+    border: 1px solid #ddd; /* Optional, for better visibility */
+}
+
+.button, .captureButton {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007bff; /* Bootstrap primary color for example */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover, .captureButton:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}
