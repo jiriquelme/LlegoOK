@@ -1,15 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    output: 'export', // Configuración para generar exportación estática
-    async rewrites() {
-        return [
-            {
-                source: '/api/:path*',
-                destination: 'http://34.46.252.163/:path*', // Redirige al backend
-            },
-        ];
+    webpack: (config, { isServer }) => {
+      if (!isServer) {
+        config.resolve.fallback = {
+          ...config.resolve.fallback,
+          net: false, // Evita problemas con 'net'
+          tls: false, // Evita problemas con 'tls'
+          fs: false,  // Evita problemas con 'fs'
+        };
+      }
+      return config;
     },
-};
-
-module.exports = nextConfig;
+  };
+  
+  module.exports = nextConfig;
+  

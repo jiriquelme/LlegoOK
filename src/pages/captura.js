@@ -1,36 +1,44 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import styles from '../styles/Home.module.css';
+import styles from '../styles/captura.module.css';
 
 export default function Captura() {
-    const [isCameraOn, setIsCameraOn] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showErrorPopup, setShowErrorPopup] = useState(false);
+    const [isClosingPopup, setIsClosingPopup] = useState(false); // Para animación de cierre del popup
     const videoRef = useRef(null);
     const router = useRouter();
 
     useEffect(() => {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const isMobileDevice = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+        setIsMobile(isMobileDevice);
+
         async function setupCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
                 }
             } catch (error) {
                 console.error('Error al acceder a la cámara:', error);
+                setErrorMessage('No se pudo acceder a la cámara. Verifica los permisos.');
+                setShowErrorPopup(true);
             }
         }
 
-        if (isCameraOn) {
-            setupCamera();
-        }
+        setupCamera();
 
         return () => {
             if (videoRef.current && videoRef.current.srcObject) {
                 const tracks = videoRef.current.srcObject.getTracks();
-                tracks.forEach(track => track.stop());
+                tracks.forEach((track) => track.stop());
             }
         };
-    }, [isCameraOn]);
+    }, []);
 
     const captureImage = async () => {
         if (!videoRef.current) return;
@@ -44,81 +52,125 @@ export default function Captura() {
         canvas.toBlob(async (blob) => {
             if (!blob) return;
 
+            setIsLoading(true);
+            setErrorMessage('');
+            setShowErrorPopup(false);
+
             try {
-                // Paso 1: Enviar la imagen a Google Vision AI
-                const formData_ImageProcessing = new FormData();
-                formData_ImageProcessing.append('image', blob, 'photo.jpg');
+                const textoGoogle = await processImage(blob);
+                const codigoDepto = await analyzeText(textoGoogle);
+                const nombreResidente = await fetchResidenteData(codigoDepto);
+                await sendNotification(codigoDepto, blob);
 
-                console.log('Formdata:', formData_ImageProcessing);
-
-                const url_ImageProcessing = 'http://34.46.252.163/api/process-image/';
-
-                const response_ImageProcessing = await axios.post(url_ImageProcessing, formData_ImageProcessing);
-                const texto_google =  response_ImageProcessing.data.text;;
-                console.log('Respuesta de Google Vision AI:', texto_google);
-
-                // Paso 2: Enviar el texto procesado a OpenAI GPT
-                const url_TextAnalysis = 'http://35.193.164.187/api/analyze-text/';
-                const response_TextAnalysis = await axios.post(url_TextAnalysis, {
-                    text: texto_google,
-                });
-
-                const codigo_depto = response_TextAnalysis.data.openai_depto;
-
-                console.log('Respuesta de OpenAI:', codigo_depto);
-
-
-                // Paso 3: Consultar los datos del residente
-                const url_ManagementService = 'http://34.29.123.189/api/residente/';
-                const response_ManagementService = await axios.get(url_ManagementService, {
-                    params: { codigo_departamento: codigo_depto },
-                });
-
-                const nombre_residente = response_ManagementService.data.nombre_completo;
-                console.log('Respuesta de Management:', response_ManagementService.data);
-
-                // Paso 4: Enviar la notificación
-                const url_Notification = 'http://146.148.75.57/api/notifications/send/';
-
-                // Crea un nuevo FormData para la notificación
-                const formData_Notification = new FormData();
-                formData_Notification.append('codigo_departamento', codigo_depto);
-                formData_Notification.append('image', blob, 'photo.jpg');
-
-                const response_Notification = await axios.post(url_Notification, formData_Notification, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
-                });
-
-                console.log('Respuesta de Notificaciones:', response_Notification.data);
-
-                // Mostrar mensaje al usuario
-                const mensaje_Notificacion = `Se ha notificado a ${nombre_residente}, residente del departamento ${codigo_depto}.`;
-                alert(mensaje_Notificacion);
-
-                // Redirigir a otra página si es necesario
+                alert(`Se ha notificado a ${nombreResidente}, residente del departamento ${codigoDepto}.`);
                 router.push('/envio-confirmacion');
-
             } catch (error) {
                 console.error('Error en el flujo:', error);
-                alert('Hubo un error al procesar la solicitud. Por favor, intenta nuevamente.');
+                setErrorMessage(error.message || 'Hubo un error al procesar la solicitud.');
+                setShowErrorPopup(true);
+            } finally {
+                setIsLoading(false);
             }
         });
     };
 
+    const processImage = async (blob) => {
+        try {
+            const formData = new FormData();
+            formData.append('image', blob, 'photo.jpg');
+            const url = 'http://34.46.252.163/api/process-image/';
+            const response = await axios.post(url, formData);
+            return response.data.text;
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+                throw new Error('Imagen no válida.');
+            } else {
+                throw new Error('Error al procesar la imagen.');
+            }
+        }
+    };
+
+    const analyzeText = async (text) => {
+        try {
+            const url = 'http://35.193.164.187/api/analyze-text/';
+            const response = await axios.post(url, { text });
+            return response.data.openai_depto;
+        } catch (error) {
+            throw new Error('Error al analizar el texto.');
+        }
+    };
+
+    const fetchResidenteData = async (codigoDepto) => {
+        try {
+            const url = 'http://34.29.123.189/api/residente/';
+            const response = await axios.get(url, { params: { codigo_departamento: codigoDepto } });
+            return response.data.nombre_completo;
+        } catch (error) {
+            throw new Error('Error al obtener los datos del residente.');
+        }
+    };
+
+    const sendNotification = async (codigoDepto, blob) => {
+        try {
+            const formData = new FormData();
+            formData.append('codigo_departamento', codigoDepto);
+            formData.append('image', blob, 'photo.jpg');
+            const url = 'http://146.148.75.57/api/notifications/send/';
+            await axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        } catch (error) {
+            throw new Error('Error al enviar la notificación.');
+        }
+    };
+
+    const handleClosePopup = () => {
+        setIsClosingPopup(true);
+        setTimeout(() => {
+            setShowErrorPopup(false);
+            setIsClosingPopup(false);
+        }, 300); // Duración de la animación
+    };
+
     return (
-        <div className={styles.container}>
-            <h1>Captura una Etiqueta</h1>
-            {isCameraOn ? (
-                <>
-                    <video ref={videoRef} autoPlay playsInline className={styles.video}></video>
-                    <button onClick={captureImage} className={styles.captureButton}>
-                        Capturar
+        <div className={isMobile ? styles.mobileContainer : styles.desktopContainer}>
+            {isMobile && (
+                <div className={styles.mobileHeader}>
+                    <button
+                        className={`${styles.closeButton} ${styles.animateCloseButton}`}
+                        onClick={() => router.push('/')}
+                    >
+                        ✕
                     </button>
-                </>
-            ) : (
-                <button onClick={() => setIsCameraOn(true)} className={styles.button}>
-                    Iniciar Cámara
-                </button>
+                </div>
+            )}
+            {isLoading && <p className={styles.loading}>Procesando...</p>}
+            <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className={isMobile ? styles.mobileVideo : styles.desktopVideo}
+            ></video>
+            <button
+                onClick={captureImage}
+                className={`${isMobile ? styles.mobileCaptureButton : styles.desktopCaptureButton} ${styles.animateCaptureButton}`}
+                disabled={isLoading}
+            >
+                <i className="fas fa-camera" aria-hidden="true"></i>
+            </button>
+
+            {showErrorPopup && (
+                <div className={`${styles.errorPopup} ${isClosingPopup ? styles.fadeOutPopup : ''}`}>
+                    <div className={styles.errorPopupContent}>
+                        <i className={`fas fa-exclamation-circle ${styles.errorIcon}`} aria-hidden="true"></i>
+                        <h3 className={styles.errorTitle}>Error</h3>
+                        <p className={styles.errorMessage}>{errorMessage}</p>
+                        <button
+                            onClick={handleClosePopup}
+                            className={`${styles.errorCloseButton} ${styles.animateCloseButton}`}
+                        >
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
             )}
         </div>
     );
