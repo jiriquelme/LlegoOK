@@ -21,8 +21,8 @@ export default function EntregaExitosa() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>¡Residente Válido!</h1>
-      <p className={styles.message}>Ahora puede entregar la encomienda.</p>
+      <h1 className={styles.title}>¡Código QR Válido!</h1>
+      <p className={styles.message}>Ahora puede entregar la encomienda al residente.</p>
       <button className={styles.homeButton} onClick={handleReturnToHome}>
         Volver al Inicio
       </button>

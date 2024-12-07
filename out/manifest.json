@@ -1,0 +1,22 @@
+{
+    "name": "LlegOk",
+    "short_name": "LlegOk",
+    "description": "Gestión de encomiendas con LlegOk.",
+    "icons": [
+      {
+        "src": "/icons/icono_transparente.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/icons/icono_transparente.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#ffffff",
+    "theme_color": "#007bff",
+    "display": "standalone"
+  }
+  

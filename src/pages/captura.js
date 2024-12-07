@@ -8,7 +8,13 @@ export default function Captura() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showErrorPopup, setShowErrorPopup] = useState(false);
-    const [isClosingPopup, setIsClosingPopup] = useState(false); // Para animación de cierre del popup
+    const [isClosingPopup, setIsClosingPopup] = useState(false);
+    const [showFlash, setShowFlash] = useState(false);
+    const [capturedImage, setCapturedImage] = useState(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showProcessingModal, setShowProcessingModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
     const videoRef = useRef(null);
     const router = useRouter();
 
@@ -40,86 +46,80 @@ export default function Captura() {
         };
     }, []);
 
-    const captureImage = async () => {
-        if (!videoRef.current) return;
+    const triggerFlash = () => {
+        setShowFlash(true);
+        setTimeout(() => setShowFlash(false), 300);
+    };
 
-        const canvas = document.createElement('canvas');
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        const context = canvas.getContext('2d');
-        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const captureImage = () => {
+        try{
+            triggerFlash();
 
-        canvas.toBlob(async (blob) => {
-            if (!blob) return;
+            if (!videoRef.current) return;
+    
+            const canvas = document.createElement('canvas');
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    
+            canvas.toBlob((blob) => {
+                const imageURL = URL.createObjectURL(blob);
+                setCapturedImage({ blob, url: imageURL });
+                setShowConfirmModal(true);
+            });
+        } catch (error){
+            console.log("No se pudo capturar la imagen",error)
+        }
+    };
 
-            setIsLoading(true);
-            setErrorMessage('');
-            setShowErrorPopup(false);
+    const handleConfirmSend = async () => {
+        setShowConfirmModal(false);
+        setShowProcessingModal(true);
 
-            try {
-                const textoGoogle = await processImage(blob);
-                const codigoDepto = await analyzeText(textoGoogle);
-                const nombreResidente = await fetchResidenteData(codigoDepto);
-                await sendNotification(codigoDepto, blob);
+        try {
+            const textoGoogle = await processImage(capturedImage.blob);
+            const codigoDepto = await analyzeText(textoGoogle);
+            const nombreResidente = await fetchResidenteData(codigoDepto);
+            await sendNotification(codigoDepto, capturedImage.blob);
 
-                alert(`Se ha notificado a ${nombreResidente}, residente del departamento ${codigoDepto}.`);
-                router.push('/envio-confirmacion');
-            } catch (error) {
-                console.error('Error en el flujo:', error);
-                setErrorMessage(error.message || 'Hubo un error al procesar la solicitud.');
-                setShowErrorPopup(true);
-            } finally {
-                setIsLoading(false);
-            }
-        });
+            setSuccessMessage(`Se ha notificado a ${nombreResidente}, residente del departamento ${codigoDepto}.`);
+            setShowSuccessModal(true);
+        } catch (error) {
+            console.log('Error en el flujo:', error);
+            setErrorMessage("Imagen Inválida");
+            setShowErrorPopup(true);
+        } finally {
+            setShowProcessingModal(false);
+        }
     };
 
     const processImage = async (blob) => {
-        try {
-            const formData = new FormData();
-            formData.append('image', blob, 'photo.jpg');
-            const url = 'http://34.46.252.163/api/process-image/';
-            const response = await axios.post(url, formData);
-            return response.data.text;
-        } catch (error) {
-            if (error.response && error.response.status === 404) {
-                throw new Error('Imagen no válida.');
-            } else {
-                throw new Error('Error al procesar la imagen.');
-            }
-        }
+        const formData = new FormData();
+        formData.append('image', blob, 'photo.jpg');
+        const url = 'http://34.46.252.163/api/process-image/';
+        const response = await axios.post(url, formData);
+        return response.data.text;
     };
 
     const analyzeText = async (text) => {
-        try {
-            const url = 'http://35.193.164.187/api/analyze-text/';
-            const response = await axios.post(url, { text });
-            return response.data.openai_depto;
-        } catch (error) {
-            throw new Error('Error al analizar el texto.');
-        }
+        const url = 'http://35.193.164.187/api/analyze-text/';
+        const response = await axios.post(url, { text });
+        return response.data.openai_depto;
     };
 
     const fetchResidenteData = async (codigoDepto) => {
-        try {
-            const url = 'http://34.29.123.189/api/residente/';
-            const response = await axios.get(url, { params: { codigo_departamento: codigoDepto } });
-            return response.data.nombre_completo;
-        } catch (error) {
-            throw new Error('Error al obtener los datos del residente.');
-        }
+        const url = 'http://34.29.123.189/api/residente/';
+        const response = await axios.get(url, { params: { codigo_departamento: codigoDepto } });
+        return response.data.nombre_completo;
     };
 
     const sendNotification = async (codigoDepto, blob) => {
-        try {
-            const formData = new FormData();
-            formData.append('codigo_departamento', codigoDepto);
-            formData.append('image', blob, 'photo.jpg');
-            const url = 'http://146.148.75.57/api/notifications/send/';
-            await axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-        } catch (error) {
-            throw new Error('Error al enviar la notificación.');
-        }
+        const formData = new FormData();
+        formData.append('codigo_departamento', codigoDepto);
+        formData.append('image', blob, 'photo.jpg');
+        const url = 'http://146.148.75.57/api/notifications/send/';
+        await axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
     };
 
     const handleClosePopup = () => {
@@ -127,11 +127,21 @@ export default function Captura() {
         setTimeout(() => {
             setShowErrorPopup(false);
             setIsClosingPopup(false);
-        }, 300); // Duración de la animación
+        }, 300);
     };
 
     return (
         <div className={isMobile ? styles.mobileContainer : styles.desktopContainer}>
+            {!isMobile && (
+                <div className={styles.desktopHeader}>
+                    <button
+                        className={`${styles.backButton}`}
+                        onClick={() => router.push('/')}
+                    >
+                        Regresar al menú
+                    </button>
+                </div>
+            )}
             {isMobile && (
                 <div className={styles.mobileHeader}>
                     <button
@@ -142,33 +152,62 @@ export default function Captura() {
                     </button>
                 </div>
             )}
-            {isLoading && <p className={styles.loading}>Procesando...</p>}
+            {showFlash && <div className={styles.flash}></div>}
+            {showConfirmModal && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <img src={capturedImage.url} alt="Foto capturada" className={styles.capturedImage} />
+                        <p>¿Esta es la foto que desea enviar?</p>
+                        <div className={styles.modalButtons}>
+                            <button onClick={handleConfirmSend} className={`${styles.modalButton} ${styles.primary}`}>
+                                Sí
+                            </button>
+                            <button onClick={() => setShowConfirmModal(false)} className={`${styles.modalButton} ${styles.secondary}`}>
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showProcessingModal && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <p>Procesando imagen...</p>
+                    </div>
+                </div>
+            )}
+            {showSuccessModal && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <p>{successMessage}</p>
+                        <button 
+                            onClick={() => setShowSuccessModal(false)} 
+                            className={`${styles.modalButton} ${styles.single}`}
+                            >
+                            Aceptar
+                        </button>
+                    </div>
+                </div>
+            )}
             <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className={isMobile ? styles.mobileVideo : styles.desktopVideo}
+            ref={videoRef}
+            autoPlay
+            playsInline
+            className={isMobile ? styles.mobileVideo : styles.desktopVideo}
             ></video>
             <button
-                onClick={captureImage}
-                className={`${isMobile ? styles.mobileCaptureButton : styles.desktopCaptureButton} ${styles.animateCaptureButton}`}
-                disabled={isLoading}
+            onClick={captureImage}
+            className={`${isMobile ? styles.mobileCaptureButton : styles.desktopCaptureButton}`}
+            disabled={isLoading}
             >
-                <i className="fas fa-camera" aria-hidden="true"></i>
+            <i className="fas fa-camera" aria-hidden="true"></i>
             </button>
-
             {showErrorPopup && (
                 <div className={`${styles.errorPopup} ${isClosingPopup ? styles.fadeOutPopup : ''}`}>
                     <div className={styles.errorPopupContent}>
-                        <i className={`fas fa-exclamation-circle ${styles.errorIcon}`} aria-hidden="true"></i>
-                        <h3 className={styles.errorTitle}>Error</h3>
-                        <p className={styles.errorMessage}>{errorMessage}</p>
-                        <button
-                            onClick={handleClosePopup}
-                            className={`${styles.errorCloseButton} ${styles.animateCloseButton}`}
-                        >
-                            Cerrar
-                        </button>
+                        <h3>Error</h3>
+                        <p>{errorMessage}</p>
+                        <button onClick={handleClosePopup}>Cerrar</button>
                     </div>
                 </div>
             )}

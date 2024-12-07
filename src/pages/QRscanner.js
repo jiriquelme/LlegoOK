@@ -8,95 +8,108 @@ import styles from '../styles/QRScanner.module.css';
 const QRScannerComponent = dynamic(() => import('react-qr-scanner'), { ssr: false });
 
 export default function QRScanner() {
-    const [result, setResult] = useState(''); // Resultado del escaneo
-    const [isSuccess, setIsSuccess] = useState(false); // Éxito en el escaneo
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isScanning, setIsScanning] = useState(true); // Controla si el escáner está activo
     const router = useRouter();
 
     const handleScan = async (data) => {
-        if (data) {
-            console.log('QR escaneado:', data);
-    
+        if (!data || !data.text || !isScanning) return; // Asegúrate de que el escáner esté activo
+        console.log('Data recibida:', data);
+
+        setIsLoading(true);
+        setErrorMessage('');
+        try {
+            let parsedData;
             try {
-                // Intenta parsear el texto del QR
-                let parsedData;
-                try {
-                    const correctedText = data.text.replace(/'/g, '"');
-                    parsedData = JSON.parse(correctedText);
-                } catch (jsonError) {
-                    console.error('Error al parsear el texto del QR:', jsonError);
-                    alert('El QR escaneado no tiene un formato válido.');
-                    return;
-                }
-    
-                console.log('Datos parseados:', parsedData);
-    
-                if (!parsedData.id_encomienda) {
-                    alert('El QR escaneado no contiene un ID válido.');
-                    return;
-                }
-    
-                // Crear form-data
-                const formData = new FormData();
-                formData.append('qr_data', parsedData.id_encomienda);
-    
-                // Enviar datos al backend
-                const url = 'http://34.29.123.189/api/analizar-qr/';
-                console.log('Enviando datos al backend:', formData);
-    
-                const response = await axios.post(url, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-    
-                console.log('Respuesta del backend:', response.data);
-    
-                if (response.status === 200 && response.data.status) {
-                    // Redirige directamente a la página de éxito
-                    router.push('/entrega-exitosa');
-                } else {
-                    alert('Error: ' + response.data.detail || 'El QR no es válido o no se encontró en el sistema.');
-                }
+                const correctedText = data.text.replace(/'/g, '"'); // Accede a data.text
+                console.log('Texto corregido:', correctedText);
+                parsedData = JSON.parse(correctedText);
             } catch (error) {
-                console.error('Error al procesar el QR:', error);
-                if (error.response && error.response.data && error.response.data.detail) {
-                    alert('Error: ' + error.response.data.detail);
-                } else {
-                    alert('Hubo un error al procesar el QR. Intenta nuevamente.');
-                }
+                throw new Error('El QR escaneado no tiene un formato válido.');
             }
+
+            if (!parsedData.id_encomienda) {
+                throw new Error('El QR escaneado no contiene un ID válido.');
+            }
+
+            const encomiendaId = parsedData.id_encomienda;
+            const estadoUrl = `http://34.29.123.189/api/encomienda/${encomiendaId}/estado/`;
+
+            const estadoResponse = await axios.get(estadoUrl);
+
+            if (estadoResponse.data.estado === 'Entregado') {
+                setIsScanning(false); // Desactiva el escáner antes de redirigir
+                router.push('/entrega-ya-realizada');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('qr_data', encomiendaId);
+
+            const url = 'http://34.29.123.189/api/analizar-qr/';
+            const response = await axios.post(url, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.status === 200 && response.data.status) {
+                setIsSuccess(true);
+                setTimeout(() => {
+                    setIsScanning(false); // Desactiva el escáner antes de redirigir
+                    router.push('/entrega-exitosa');
+                }, 2000);
+            } else {
+                throw new Error(response.data.detail || 'El QR no es válido o no se encontró en el sistema.');
+            }
+        } catch (error) {
+            setErrorMessage(error.message || 'Hubo un error al procesar el QR.');
+        } finally {
+            setIsLoading(false);
         }
     };
-    
-    
 
-    const handleError = (err) => {
-        console.error('Error del lector de QR:', err);
-        alert('Hubo un problema al leer el QR. Intenta nuevamente.');
+    const handleError = (error) => {
+        console.error(error);
+        setErrorMessage('Hubo un error al acceder a la cámara.');
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.titleWrapper}>
                 <h1 className={styles.title}>Escáner de QR</h1>
-                <img
-                    src="/icons/Photography-Equipment-Flash-Light--Streamline-Ultimate.png"
-                    alt="Ícono de QR"
-                    className={styles.titleIcon}
-                />
             </div>
-            <div className={`${styles.scannerWrapper} ${isSuccess ? styles.success : ''}`}>
-                <QRScannerComponent
-                    delay={300}
-                    onError={handleError}
-                    onScan={handleScan}
-                    style={{ width: '100%' }}
-                />
+            <div className={styles.scannerWrapper}>
+                {isScanning && (
+                    <QRScannerComponent
+                        delay={300}
+                        onError={handleError}
+                        onScan={handleScan}
+                        style={{ width: '100%' }}
+                    />
+                )}
+                {isLoading && (
+                    <div className={styles.overlay}>
+                        <p className={styles.loadingText}>Analizando QR...</p>
+                    </div>
+                )}
             </div>
-            <button className={styles.button} onClick={() => router.push('/')}>
-                ← Volver
+            {errorMessage && (
+                <div className={styles.errorMessage}>
+                    <p>{errorMessage}</p>
+                </div>
+            )}
+            <button
+                className={styles.button}
+                onClick={() => {
+                    setIsScanning(false); // Detén el escáner al volver al inicio
+                    router.push('/');
+                }}
+            >
+                Volver al inicio
             </button>
-            {result && <p className={styles.result}>Resultado: {result}</p>}
         </div>
     );
 }

@@ -18,6 +18,11 @@
       "static/chunks/main.js",
       "static/chunks/pages/index.js"
     ],
+    "/QRscanner": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/QRscanner.js"
+    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -27,6 +32,31 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
+    ],
+    "/confirmacionRecepcion": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/confirmacionRecepcion.js"
+    ],
+    "/entrega-exitosa": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/entrega-exitosa.js"
+    ],
+    "/entrega-ya-realizada": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/entrega-ya-realizada.js"
+    ],
+    "/historial": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/historial.js"
+    ],
+    "/recepcion-manual": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/recepcion-manual.js"
     ]
   },
   "ampFirstPages": []

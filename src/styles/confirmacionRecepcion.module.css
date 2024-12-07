@@ -1,0 +1,32 @@
+/* styles/Success.module.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    text-align: center;
+  }
+  
+  .title {
+    font-size: 2.5em;
+    color: #00796b;
+    margin-bottom: 20px;
+  }
+  
+  .message {
+    font-size: 1.5em;
+    color: #004d40;
+  }
+  .homeButton {
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #0070f3;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }  

@@ -6,44 +6,73 @@ import { useRouter } from 'next/router';
 export default function Historial() {
     const [encomiendas, setEncomiendas] = useState([]);
     const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filter, setFilter] = useState(''); // 'entregado', 'pendiente', ''
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10); // Número de elementos por página
     const router = useRouter();
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchAllData = async () => {
             try {
-                const response = await axios.get('http://34.29.123.189/encomiendas/');
-                const encomiendasData = response.data;
+                let allData = [];
+                let nextUrl = 'http://34.29.123.189/encomiendas/';
+                
+                // Loop para cargar todas las páginas
+                while (nextUrl) {
+                    const response = await axios.get(nextUrl);
+                    allData = [...allData, ...response.data.results];
+                    nextUrl = response.data.next; // Siguiente página
+                }
 
-                console.log('Datos del backend (encomiendas):', encomiendasData);
-
-                const formattedData = encomiendasData.map((encomienda) => {
-                    return {
-                        id: encomienda.id,
-                        fechaLlegada: encomienda.Fecha_Llegada || "Fecha no disponible",
-                        fechaRecepcion: encomienda.Fecha_Recepcion || "Fecha no disponible",
-                        departamento: encomienda.departamento || "Sin información",
-                        residente: encomienda.residente || "Sin información",
-                        estado: encomienda.Fecha_Recepcion ? "Entregado" : "Pendiente",
-                    };
-                });
-
-                console.log('Datos formateados con nombres:', formattedData);
-                setEncomiendas(formattedData);
+                setEncomiendas(allData);
             } catch (error) {
                 console.error('Error al obtener los datos de encomiendas:', error.message);
                 setError('No se pudieron cargar las encomiendas.');
             }
         };
 
-        fetchData();
+        fetchAllData();
     }, []);
 
-    const formatDate = (dateString) => {
-        if (!dateString || dateString === "Fecha no disponible") return "Fecha no disponible";
-        const date = new Date(dateString);
-        return isNaN(date.getTime())
-            ? "Fecha inválida"
-            : date.toLocaleString("es-CL", { timeZone: "America/Santiago" });
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value.toLowerCase());
+        setCurrentPage(1); // Reinicia la página actual al buscar
+    };
+
+    const handleFilter = (status) => {
+        setFilter(status);
+        setCurrentPage(1); // Reinicia la página actual al filtrar
+    };
+
+    // Filtrar los datos antes de paginar
+    const filteredData = encomiendas
+        .filter((encomienda) =>
+            encomienda.residente.toLowerCase().includes(searchTerm) ||
+            encomienda.departamento.toLowerCase().includes(searchTerm)
+        )
+        .filter((encomienda) => {
+            if (filter === 'entregado') return encomienda.estado === 'Entregado';
+            if (filter === 'pendiente') return encomienda.estado === 'Pendiente';
+            return true;
+        });
+
+    // Calcular la paginación
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage); // Número total de páginas
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
     };
 
     return (
@@ -52,6 +81,34 @@ export default function Historial() {
             <button className={styles.backButton} onClick={() => router.push('/')}>
                 ← Volver
             </button>
+            <div className={styles.filters}>
+                <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Buscar por departamento o residente..."
+                    onChange={handleSearch}
+                />
+                <div className={styles.filterButtons}>
+                    <button
+                        className={`${styles.filterButton} ${filter === '' && styles.activeFilter}`}
+                        onClick={() => handleFilter('')}
+                    >
+                        Todos
+                    </button>
+                    <button
+                        className={`${styles.filterButton} ${filter === 'entregado' && styles.activeFilter}`}
+                        onClick={() => handleFilter('entregado')}
+                    >
+                        Entregados
+                    </button>
+                    <button
+                        className={`${styles.filterButton} ${filter === 'pendiente' && styles.activeFilter}`}
+                        onClick={() => handleFilter('pendiente')}
+                    >
+                        Pendientes
+                    </button>
+                </div>
+            </div>
             {error ? (
                 <p className={styles.error}>{error}</p>
             ) : (
@@ -66,16 +123,16 @@ export default function Historial() {
                             </tr>
                         </thead>
                         <tbody>
-                            {encomiendas.map((encomienda) => (
+                            {currentItems.map((encomienda) => (
                                 <tr key={encomienda.id}>
-                                    <td>{formatDate(encomienda.fechaLlegada)}</td>
+                                    <td>{new Date(encomienda.Fecha_Llegada).toLocaleString()}</td>
                                     <td>{encomienda.departamento}</td>
                                     <td>{encomienda.residente}</td>
                                     <td
                                         className={
                                             encomienda.estado === 'Pendiente'
-                                                ? styles.pendiente
-                                                : styles.entregado
+                                                ? styles.pendingBadge
+                                                : styles.deliveredBadge
                                         }
                                     >
                                         {encomienda.estado}
@@ -84,6 +141,25 @@ export default function Historial() {
                             ))}
                         </tbody>
                     </table>
+                    <div className={styles.pagination}>
+                        <button
+                            className={styles.paginationButton}
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                        >
+                            Anterior
+                        </button>
+                        <span>
+                            Página {currentPage} de {totalPages}
+                        </span>
+                        <button
+                            className={styles.paginationButton}
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                        >
+                            Siguiente
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

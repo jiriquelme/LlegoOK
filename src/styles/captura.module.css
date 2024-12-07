@@ -1,306 +1,261 @@
-/* Estilo para móviles */
-.mobileContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
-  background-color: black;
-  position: relative;
-}
-
-.mobileHeader {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 100;
-}
-
-.closeButton {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: black;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-}
-
-.closeButton:hover {
-  background-color: rgba(255, 0, 0, 0.8);
-  color: white;
-}
-
-.mobileVideo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mobileCaptureButton {
-  position: absolute;
-  bottom: 20px;
-  width: 70px;
-  height: 70px;
-  background-color: white;
-  color: black;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-}
-
-.mobileCaptureButton:hover {
-  transform: scale(1.1);
-}
-
-.mobileCaptureButton:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-/* Estilo para escritorio */
+/* Contenedor general para desktop */
 .desktopContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100vh;
+  background-color: #f4f6f9; /* Fondo claro */
   padding: 20px;
-  background-color: #f8f9fa;
-  min-height: 100vh;
-  position: relative;
+  font-family: 'Roboto', sans-serif;
 }
 
+/* Encabezado para desktop */
+.desktopHeader {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+.backButton {
+  background-color: #4a90e2; /* Azul moderno */
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+.backButton:hover {
+  background-color: #357ABD; /* Azul más oscuro */
+  transform: scale(1.05);
+}
+
+.backButton:active {
+  transform: scale(0.95);
+}
+
+/* Video en desktop */
 .desktopVideo {
   width: 60%;
   max-width: 800px;
   height: auto;
-  border: 5px solid #ddd;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
   margin-bottom: 20px;
-}
-
-.desktopCaptureButton {
-  width: 70px;
-  height: 70px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.2s ease-in-out;
-}
-
-.desktopCaptureButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.1);
-}
-
-.desktopCaptureButton:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-/* Otros estilos */
-.loading {
-  font-size: 1rem;
-  color: #007bff;
-  margin-bottom: 20px;
-}
-
-.errorPopup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.errorPopupContent {
-  background-color: white;
-  padding: 30px; /* Aumentado el padding para mayor espacio */
-  border-radius: 8px;
-  width: 300px; /* Especificado un ancho fijo */
-  height: auto; /* Permitimos que crezca dinámicamente */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.errorTitle {
-  color: red;
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-
-.errorMessage {
-  margin-bottom: 20px;
-  font-size: 1rem;
-  color: #333;
-}
-
-.errorCloseButton {
-  background-color: red;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
-}
-
-.errorCloseButton:hover {
-  background-color: darkred;
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-      opacity: 0;
-      transform: scale(0.9);
-  }
-  to {
-      opacity: 1;
-      transform: scale(1);
-  }
-}
-
-@keyframes fadeOut {
-  from {
-      opacity: 1;
-      transform: scale(1);
-  }
-  to {
-      opacity: 0;
-      transform: scale(0.9);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-      opacity: 0;
-      transform: translateX(-100%);
-  }
-  to {
-      opacity: 1;
-      transform: translateX(0);
-  }
-}
-
-@keyframes slideOutRight {
-  from {
-      opacity: 1;
-      transform: translateX(0);
-  }
-  to {
-      opacity: 0;
-      transform: translateX(100%);
-  }
-}
-
-/* Estilo del pop-up */
-.errorPopup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease-out; /* Animación al aparecer */
-}
-
-.errorPopupContent {
-  background-color: white;
-  padding: 30px;
-  border-radius: 8px;
-  width: 300px;
-  height: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  animation: fadeIn 0.3s ease-out; /* Animación de entrada */
-}
-
-.errorCloseButton {
-  background-color: red;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.errorCloseButton:hover {
-  background-color: darkred;
-}
-
-.errorPopup.out {
-  animation: fadeOut 0.3s ease-in; /* Animación al cerrar */
-}
-
-/* Botón de cierre en modo móvil */
-.mobileHeader {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 100;
-}
-
-.closeButton {
-  font-size: 2rem;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  animation: slideInLeft 0.3s ease-out; /* Animación de entrada */
-  transition: transform 0.3s ease;
-}
-
-.closeButton:hover {
-  transform: scale(1.2);
-}
-
-.closeButton.out {
-  animation: slideOutRight 0.3s ease-in; /* Animación al cerrar */
 }
 
 /* Botón de captura */
-.desktopCaptureButton, .mobileCaptureButton {
-  animation: fadeIn 0.3s ease-out; /* Animación al aparecer */
+.desktopCaptureButton {
+  width: 100px;
+  height: 100px;
+  background-color: #4a90e2; /* Azul */
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.desktopCaptureButton:active, .mobileCaptureButton:active {
-  transform: scale(0.9); /* Animación de pulsación */
+.desktopCaptureButton:hover {
+  transform: scale(1.1);
+  background-color: #357ABD; /* Azul más oscuro */
 }
 
+.desktopCaptureButton i {
+  font-size: 28px;
+  color: white;
+}
+
+/* Mensajes de error */
+.errorPopup {
+  position: fixed;
+  top: 50%; /* Centrado vertical */
+  left: 50%; /* Centrado horizontal */
+  transform: translate(-50%, -50%);
+  background-color: #ff4d4d; /* Fondo rojo */
+  color: white;
+  padding: 25px 40px; /* Más espacio interno */
+  border-radius: 12px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Sombra */
+  font-size: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 20px; /* Más espacio entre elementos */
+}
+
+.errorPopupContent h3 {
+  margin: 0;
+  font-size: 22px; /* Título más grande */
+  font-weight: bold;
+}
+
+.errorPopupContent p {
+  margin: 0;
+  font-size: 18px; /* Texto más claro */
+  line-height: 1.5; /* Espaciado entre líneas */
+  padding: 0 10px; /* Espaciado horizontal interno */
+}
+
+.errorPopupContent button {
+  background-color: white;
+  color: #ff4d4d;
+  border: none;
+  padding: 12px 25px; /* Más grande y espacioso */
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para el botón */
+}
+
+.errorPopupContent button:hover {
+  background-color: #ff8080; /* Rojo claro */
+  color: white;
+  transform: scale(1.05); /* Efecto de hover */
+}
+
+.errorPopupContent button:active {
+  transform: scale(0.95); /* Efecto al hacer clic */
+}
+
+/* Animaciones */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%); /* Aparece desde arriba */
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%); /* Llega a su posición final */
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%); /* Posición inicial */
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -40%); /* Desaparece hacia arriba */
+  }
+}
+
+/* Clase para la animación de salida */
+.fadeOutPopup {
+  animation: slideOut 0.5s ease-out forwards;
+}
+
+/* Flash de cámara */
+.flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  opacity: 0;
+  z-index: 9999;
+  animation: flashEffect 0.3s ease-out;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modalContent img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.modalButton {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modalButton.primary {
+  background-color: #4a90e2; /* Azul */
+  color: white;
+}
+
+.modalButton.primary:hover {
+  background-color: #357ABD;
+}
+
+.modalButton.secondary {
+  background-color: #ff5a5a; /* Rojo */
+  color: white;
+  margin-left: 10px;
+}
+
+.modalButton.secondary:hover {
+  background-color: #e04848;
+}
+
+/* Animaciones */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flashEffect {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

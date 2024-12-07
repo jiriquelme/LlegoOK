@@ -2,5 +2,11 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js"
+  "/QRscanner": "pages/QRscanner.js",
+  "/": "pages/index.js",
+  "/entrega-ya-realizada": "pages/entrega-ya-realizada.js",
+  "/recepcion-manual": "pages/recepcion-manual.js",
+  "/confirmacionRecepcion": "pages/confirmacionRecepcion.js",
+  "/historial": "pages/historial.js",
+  "/entrega-exitosa": "pages/entrega-exitosa.js"
 }

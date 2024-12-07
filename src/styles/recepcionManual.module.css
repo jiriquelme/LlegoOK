@@ -1,0 +1,122 @@
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.backButton {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.backButton:hover {
+    background-color: #0056b3;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input,
+.fileInput {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.previewContainer {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.imagePreview {
+    max-width: 200px; /* Ancho máximo ajustado */
+    max-height: 200px; /* Altura máxima ajustada */
+    height: auto;
+    width: auto;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin: 0 auto;
+    display: block;
+}
+
+
+.submitButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submitButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.submitButton:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+/* Overlay para la pantalla oscura */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Texto dentro del overlay */
+.overlayText {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+
+
+.loadingMessage {
+    color: #fff;
+    font-size: 1.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+}

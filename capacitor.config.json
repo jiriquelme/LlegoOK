@@ -1,6 +1,9 @@
 {
   "appId": "com.llegOk.app",
-  "appName": "llegok.app",
-  "webDir": "public",
-  "bundledWebRuntime": false
+  "appName": "LlegOk",
+  "webDir": "out",
+  "bundledWebRuntime": false,
+  "android": {
+    "backgroundColor": "#ffffff"
+  }
 }
