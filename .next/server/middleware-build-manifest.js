@@ -35,11 +35,6 @@ self.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/confirmacionRecepcion.js"
     ],
-    "/entrega-exitosa": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/entrega-exitosa.js"
-    ],
     "/entrega-ya-realizada": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
